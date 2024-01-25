@@ -102,6 +102,8 @@ int decompress_jpeg_to_rgb(jpeg_turbo_decoder *decoder) {
     decoder->cinfo.do_fancy_upsampling = false;
     decoder->cinfo.dct_method = JDCT_IFAST;
 
+    jpeg_calc_output_dimensions(&decoder->cinfo);
+
     // Set the orignal frame dims
     decoder->original_frame_width = decoder->cinfo.output_width;
     decoder->original_frame_height = decoder->cinfo.output_height;
