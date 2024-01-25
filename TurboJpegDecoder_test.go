@@ -1,4 +1,4 @@
-package TurboJpegDecoder
+package turbojpeg
 
 import (
 	"fmt"
