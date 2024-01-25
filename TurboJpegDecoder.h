@@ -73,22 +73,6 @@ void update_input_buffer(jpeg_turbo_decoder *decoder, unsigned char *new_buffer,
     }
 }
 
-int set_original_frame_dims(jpeg_turbo_decoder *decoder, int *width, int *height) {
-    if (decoder == NULL) {
-        return ERROR_DECODER_NOT_INTI;
-    }
-    jpeg_create_decompress(&decoder->cinfo);
-    jpeg_mem_src(&decoder->cinfo, decoder->input_buffer, decoder->input_buffer_length);
-    if (jpeg_read_header(&decoder->cinfo, TRUE) != JPEG_HEADER_OK) {
-        jpeg_destroy_decompress(&decoder->cinfo);
-        return ERROR_READING_HEADER;
-    }
-    decoder->original_frame_width = decoder->cinfo.image_width;
-    decoder->original_frame_height = decoder->cinfo.image_height;
-    jpeg_finish_decompress(&decoder->cinfo);
-    return DECOMPRESS_SUCCESS;
-}
-
 int decompress_jpeg_to_rgb(jpeg_turbo_decoder *decoder) {
 
     jpeg_create_decompress(&decoder->cinfo);
