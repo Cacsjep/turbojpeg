@@ -42,8 +42,7 @@ jpeg_turbo_decoder* alloc_decoder() {
     if (decoder == NULL) {
         return NULL;
     }
-    decoder->cinfo.err = jpeg_std_error(&decoder->jerr);
-    jpeg_create_decompress(&decoder->cinfo);
+    
     decoder->input_buffer = NULL;
     decoder->input_buffer_length = 0;
     decoder->output_buffer = NULL;
@@ -76,6 +75,7 @@ void update_input_buffer(jpeg_turbo_decoder *decoder, unsigned char *new_buffer,
 int decompress_jpeg_to_rgb(jpeg_turbo_decoder *decoder) {
 
     jpeg_create_decompress(&decoder->cinfo);
+    decoder->cinfo.err = jpeg_std_error(&decoder->jerr);
     jpeg_mem_src(&decoder->cinfo, decoder->input_buffer, decoder->input_buffer_length);
 
     if (jpeg_read_header(&decoder->cinfo, TRUE) != JPEG_HEADER_OK) {
@@ -142,6 +142,7 @@ int decompress_jpeg_to_rgb(jpeg_turbo_decoder *decoder) {
     }
     
     jpeg_finish_decompress(&decoder->cinfo);
+    jpeg_destroy_decompress(&decoder->cinfo);
     return DECOMPRESS_SUCCESS;
 }
 
@@ -156,7 +157,9 @@ void free_decoder(jpeg_turbo_decoder *decoder) {
         if (decoder->output_buffer != NULL) {
             free(decoder->output_buffer);
         }
-        jpeg_destroy_decompress(&decoder->cinfo);
+        if (decoder->input_buffer != NULL) {
+            free(decoder->input_buffer);
+        }
         free(decoder);
     }
 }
