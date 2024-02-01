@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"image"
-	"reflect"
 	"unsafe"
 )
 
@@ -51,10 +50,16 @@ func (d *Decoder) DecodeIntoRgba(rawFrame []byte, img *image.RGBA) error {
 	img.Stride = int(d.c.decodec_frame_width) * 4
 	// Map the C memory to a Go slice
 	length := int(d.c.output_buffer_length)
-	header := (*reflect.SliceHeader)(unsafe.Pointer(&img.Pix))
-	header.Data = uintptr(unsafe.Pointer(d.c.output_buffer))
-	header.Len = length
-	header.Cap = length
+	buffer := C.GoBytes(unsafe.Pointer(d.c.output_buffer), C.int(length))
+
+	// Ensure img.Pix has enough capacity
+	if cap(img.Pix) < length {
+		img.Pix = make([]byte, length)
+	}
+	img.Pix = img.Pix[:length]
+
+	// Copy the buffer to img.Pix
+	copy(img.Pix, buffer)
 	return nil
 }
 
