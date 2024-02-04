@@ -1,8 +1,10 @@
 package turbojpeg
 
 /*
-#cgo CFLAGS: -I.
-#cgo LDFLAGS: -ljpeg
+#cgo linux CFLAGS: -I./dist/linux/include
+#cgo linux LDFLAGS: -L./dist/linux/lib -ljpeg
+#cgo windows CFLAGS: -I./dist/windows/include
+#cgo windows LDFLAGS: -L./dist/windows/lib -ljpeg
 #include "TurboJpegDecoder.h"
 */
 import "C"

@@ -1,0 +1,10 @@
+prefix=/opt/libjpeg/linux
+exec_prefix=/opt/libjpeg/linux
+libdir=/opt/libjpeg/linux/lib
+includedir=/opt/libjpeg/linux/include
+
+Name: libjpeg
+Description: A SIMD-accelerated JPEG codec that provides the libjpeg API
+Version: 3.0.3
+Libs: -L${libdir} -ljpeg
+Cflags: -I${includedir}

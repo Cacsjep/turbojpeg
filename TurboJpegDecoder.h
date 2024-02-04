@@ -73,19 +73,16 @@ void update_input_buffer(jpeg_turbo_decoder *decoder, unsigned char *new_buffer,
 }
 
 int decompress_jpeg_to_rgb(jpeg_turbo_decoder *decoder) {
-
+    printf("sssssssssssssssssssssssss\n");
     jpeg_create_decompress(&decoder->cinfo);
     decoder->cinfo.err = jpeg_std_error(&decoder->jerr);
     jpeg_mem_src(&decoder->cinfo, decoder->input_buffer, decoder->input_buffer_length);
-
     if (jpeg_read_header(&decoder->cinfo, TRUE) != JPEG_HEADER_OK) {
         return ERROR_READING_HEADER;
     }
-
     decoder->cinfo.do_block_smoothing = false;
     decoder->cinfo.do_fancy_upsampling = false;
     decoder->cinfo.dct_method = JDCT_IFAST;
-
     jpeg_calc_output_dimensions(&decoder->cinfo);
 
     // Set the orignal frame dims
@@ -95,7 +92,6 @@ int decompress_jpeg_to_rgb(jpeg_turbo_decoder *decoder) {
     // Determine the appropriate scaling factor, update it when scale w and h is set
     decoder->cinfo.scale_num = 1;
     decoder->cinfo.scale_denom = 1;
-
     if (decoder->scaled_height > 0 && decoder->scaled_width > 0){
         if (decoder->cinfo.image_width > decoder->scaled_width || decoder->cinfo.image_height > decoder->scaled_height) {
             while (decoder->cinfo.scale_denom < 8 && (decoder->cinfo.image_width / (decoder->cinfo.scale_denom * 2) > decoder->scaled_width || decoder->cinfo.image_height / (decoder->cinfo.scale_denom * 2) > decoder->scaled_height)) {
@@ -103,21 +99,18 @@ int decompress_jpeg_to_rgb(jpeg_turbo_decoder *decoder) {
             }
         }
     }
-
     decoder->cinfo.out_color_space = getJCS_EXT_RGBA();
     if (decoder->cinfo.out_color_space == JCS_UNKNOWN) {
         decoder->cinfo.out_color_space = JCS_RGB;
         return ERROR_RGBA_SUPPORT_MISSING;
     }
-
     // Start decompression with scaling
+    printf("899999999999\n");
     if (!jpeg_start_decompress(&decoder->cinfo)) {
         return ERROR_DURING_DECOMPRESSION;
     }
-
     decoder->decodec_frame_width = decoder->cinfo.output_width;
     decoder->decodec_frame_height = decoder->cinfo.output_height;
-
     // Reallocate output buffer if necessary
     int required_size = decoder->decodec_frame_width * decoder->decodec_frame_height * decoder->cinfo.output_components;
     if (decoder->output_buffer == NULL || decoder->output_buffer_length != required_size) {
